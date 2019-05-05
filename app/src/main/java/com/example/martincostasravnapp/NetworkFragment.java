@@ -61,6 +61,9 @@ public class NetworkFragment extends Fragment
 		super.onAttach( context );
 		// Host Activity will handle callbacks from task.
 		callback = (DownloadCallback<String>) context;
+
+		// First, request the most current list of data
+		sendRequest(Request.generateListRequest());
 	}
 
 
@@ -213,8 +216,8 @@ public class NetworkFragment extends Fragment
 			Log.d( TAG, "Connecting to " + host + " on port " + port );
 			client = new Socket( host, port );
 
-			/*Log.d( TAG, "Just connected to " + client.getRemoteSocketAddress() );
-			OutputStream outToServer = client.getOutputStream();
+			Log.d( TAG, "Just connected to " + client.getRemoteSocketAddress() );
+			/**OutputStream outToServer = client.getOutputStream();
 			DataOutputStream out = new DataOutputStream( outToServer );
 
 			out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
@@ -288,20 +291,24 @@ public class NetworkFragment extends Fragment
 					callback.updateFromDownload( result.resultValue );
 				}
 
-				// For this application, callback should be the main activity. Check here to avoid exceptions
 
-				try
-				{
-					MainActivity mainActivity = (MainActivity) callback;
-
-					mainActivity.setOperas( loadedMedia );
-				}
-				catch ( ClassCastException e )
-				{
-					e.printStackTrace();
-				}
 
 				callback.finishDownloading();
+			}
+
+			//TODO check result
+
+			// For this application, callback should be the main activity. Check here to avoid exceptions
+
+			try
+			{
+				MainActivity mainActivity = (MainActivity) callback;
+
+				mainActivity.setOperas( loadedMedia );
+			}
+			catch ( ClassCastException e )
+			{
+				e.printStackTrace();
 			}
 		}
 

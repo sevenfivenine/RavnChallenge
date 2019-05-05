@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 
 		layoutManager = new LinearLayoutManager( this );
 		recyclerView.setLayoutManager( layoutManager );
-		adapter = new DataAdapter( placeholder );
-		recyclerView.setAdapter( adapter );
+		//adapter = new DataAdapter( placeholder );
+		//recyclerView.setAdapter( adapter );
 
 		// Connect to the server to retrieve data
 		if ( !downloading )
@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 			networkFragment = NetworkFragment.getInstance( getSupportFragmentManager() );
 			//networkFragment.startDownload();
 
-			// First, request the most current list of data
-			networkFragment.sendRequest(Request.generateListRequest());
+
 		}
 	}
 
