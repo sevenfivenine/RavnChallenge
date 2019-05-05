@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Martin Costa\'s Ravn App</string>
+    <string name="add_instruction">Add New Opera</string>
+    <string name="title">Name of Opera</string>
+    <string name="author">Composer</string>
+    <string name="type">Subgenre</string>
+    <string name="date">Year of Composition</string>
+    <string name="save">Save</string>
+
+    <string name="no_record">No new record created</string>
+    <string name="empty_fields">Please fill empty fields to continue</string>
 </resources>

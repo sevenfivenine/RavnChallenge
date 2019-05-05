@@ -1,12 +1,16 @@
 package com.example.martincostasravnapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -19,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 	private RecyclerView               recyclerView;
 	private RecyclerView.Adapter       adapter;
 	private RecyclerView.LayoutManager layoutManager;
+
+	private FloatingActionButton addMediaFab;
 
 	private Opera[] placeholder;
 
@@ -38,6 +44,19 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 		// Placeholder data before server connection
 		Opera placeholderItem = new Opera( "Lorem Ipsum", "Dolor sit amet", "consectetur " );
 		placeholder = new Opera[]{placeholderItem, placeholderItem, placeholderItem, placeholderItem};
+
+		addMediaFab = findViewById( R.id.addMediaFab );
+		addMediaFab.setOnClickListener( new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				// Open EditActivit to add a new media record
+				Intent intent = new Intent(MainActivity.this, EditActivity.class);
+				startActivity( intent );
+
+			}
+		} );
 
 		recyclerView = (RecyclerView) findViewById( R.id.mainRecyclerView );
 
@@ -116,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 
 	/**
 	 * Set the list of operas and update the UI to reflect changes
+	 *
 	 * @param operas
 	 */
 	public void setOperas(ArrayList<Media> operas)
