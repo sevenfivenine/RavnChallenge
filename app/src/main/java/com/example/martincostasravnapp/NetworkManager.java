@@ -1,5 +1,6 @@
 package com.example.martincostasravnapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,69 +24,42 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 
-/**
- * Implementation of headless Fragment that runs an AsyncTask to fetch data from the network.
- */
-public class NetworkFragment extends Fragment
+public class NetworkManager
 {
-	public static final String TAG = "NetworkFragment";
+	public static final String TAG = "NetworkManager";
 
+	private static RavnApplication ravnApplication;
+
+	private Activity                 activity;
 	private DownloadCallback<String> callback;
 	private NetworkTask              networkTask;
 
 	private Socket client;
 
-
-	/**
-	 * Static initializer for NetworkFragment that sets the URL of the host it will be downloading
-	 * from.
-	 */
-	public static NetworkFragment getInstance(FragmentManager fragmentManager)
+	public NetworkManager(RavnApplication ravnApplication)
 	{
-		NetworkFragment networkFragment = new NetworkFragment();
-		fragmentManager.beginTransaction().add( networkFragment, TAG ).commit();
-		return networkFragment;
+		callback = (DownloadCallback<String>) ravnApplication;
+		NetworkManager.ravnApplication = ravnApplication;
+	}
+
+	public static NetworkManager getSingleton()
+	{
+		return ravnApplication.getNetworkManager();
 	}
 
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
+	public void disconnect()
 	{
-		super.onCreate( savedInstanceState );
-	}
-
-
-	@Override
-	public void onAttach(Context context)
-	{
-		super.onAttach( context );
-		// Host Activity will handle callbacks from task.
-		callback = (DownloadCallback<String>) context;
-
-		// First, request the most current list of data
-		sendRequest(Request.generateListRequest());
-	}
-
-
-	@Override
-	public void onDetach()
-	{
-		super.onDetach();
-		// Clear reference to host Activity to avoid memory leak.
 		callback = null;
-	}
-
-
-	@Override
-	public void onDestroy()
-	{
-		// Cancel task when Fragment is destroyed.
 		cancelNetworkActivity();
-		super.onDestroy();
 	}
 
-	public int sendRequest(Request request)
+
+
+	public int sendRequest(Activity activity, Request request)
 	{
+		this.activity = activity;
+
 		cancelNetworkActivity();
 		networkTask = new NetworkTask( callback );
 		networkTask.execute(request);
@@ -229,6 +203,11 @@ public class NetworkFragment extends Fragment
 		}
 
 
+		/**
+		 * Sends request and reads the response
+		 * @param request
+		 * @throws IOException
+		 */
 		private void sendRequestInBackground(Request request) throws IOException
 		{
 			OutputStream outToServer = client.getOutputStream();
@@ -298,18 +277,7 @@ public class NetworkFragment extends Fragment
 
 			//TODO check result
 
-			// For this application, callback should be the main activity. Check here to avoid exceptions
-
-			try
-			{
-				MainActivity mainActivity = (MainActivity) callback;
-
-				mainActivity.setOperas( loadedMedia );
-			}
-			catch ( ClassCastException e )
-			{
-				e.printStackTrace();
-			}
+			ravnApplication.setOperas( loadedMedia, activity );
 		}
 
 
