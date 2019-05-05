@@ -5,16 +5,22 @@ import org.json.JSONObject;
 
 public class Media
 {
-	public static final String KEY_TYPE = "type";
-	public static final String KEY_TITLE = "title";
-	public static final String KEY_AUTHOR = "author";
-	public static final String KEY_DATE = "date";
-	public static final String KEY_ID = "id";
+	public static final String KEY_TYPE       = "type";
+	public static final String KEY_TITLE      = "title";
+	public static final String KEY_AUTHOR     = "author";
+	public static final String KEY_DATE       = "date";
+	public static final String KEY_ID         = "id";
 	public static final String KEY_VIEW_COUNT = "viewCount";
 	public static final String KEY_VIEW_ORDER = "viewOrder";
 
 	private String type, title, author, date;
 	private int id, viewCount, viewOrder;
+
+
+	public Media()
+	{
+
+	}
 
 
 	public Media(String type, String title, String author, String date, int id, int viewCount, int viewOrder)
@@ -42,6 +48,22 @@ public class Media
 		jsonObject.put( KEY_VIEW_ORDER, viewOrder );
 
 		return jsonObject;
+	}
+
+
+	public static Media JSONtoMedia(JSONObject jsonObject) throws JSONException, ClassCastException
+	{
+		Media media = new Media();
+
+		media.setId( (Integer) jsonObject.get( KEY_ID ) );
+		media.setType( (String) jsonObject.get( KEY_TYPE ) );
+		media.setTitle( (String) jsonObject.get( KEY_TITLE ) );
+		media.setAuthor( (String) jsonObject.get( KEY_AUTHOR ) );
+		media.setDate( (String) jsonObject.get( KEY_DATE ) );
+		media.setViewCount( (Integer) jsonObject.get( KEY_VIEW_COUNT ) );
+		media.setViewOrder( (Integer) jsonObject.get( KEY_VIEW_ORDER ) );
+
+		return media;
 	}
 
 

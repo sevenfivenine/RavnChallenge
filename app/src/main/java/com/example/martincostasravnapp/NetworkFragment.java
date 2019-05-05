@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 
 /**
@@ -120,17 +122,17 @@ public class NetworkFragment extends Fragment
 
 		private DownloadCallback<String> callback;
 
-
 		NetworkTask(DownloadCallback<String> callback)
 		{
 			setCallback( callback );
 		}
 
-
 		void setCallback(DownloadCallback<String> callback)
 		{
 			this.callback = callback;
 		}
+
+		private ArrayList<Media> loadedMedia;
 
 
 		/**
@@ -242,10 +244,29 @@ public class NetworkFragment extends Fragment
 			//out.writeUTF( "" );
 
 			//out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
-			//InputStream inFromServer = client.getInputStream();
-			//DataInputStream in = new DataInputStream( inFromServer );
-
+			InputStream inFromServer = client.getInputStream();
+			DataInputStream in = new DataInputStream( inFromServer );
 			//Log.d( TAG, "Server says " + in.readUTF() );
+
+			try
+			{
+				JSONArray listJSONarray = new JSONArray( in.readUTF() );
+
+				loadedMedia = new ArrayList<>();
+
+				for ( int i = 0; i < listJSONarray.length(); i++ )
+				{
+					JSONObject jsonObject = (JSONObject) listJSONarray.get( i );
+					Media media = Media.JSONtoMedia( jsonObject );
+
+					loadedMedia.add( media );
+				}
+			}
+			catch ( JSONException e )
+			{
+				e.printStackTrace();
+			}
+
 			client.close();
 		}
 
@@ -266,6 +287,20 @@ public class NetworkFragment extends Fragment
 				{
 					callback.updateFromDownload( result.resultValue );
 				}
+
+				// For this application, callback should be the main activity. Check here to avoid exceptions
+
+				try
+				{
+					MainActivity mainActivity = (MainActivity) callback;
+
+					mainActivity.setOperas( loadedMedia );
+				}
+				catch ( ClassCastException e )
+				{
+					e.printStackTrace();
+				}
+
 				callback.finishDownloading();
 			}
 		}

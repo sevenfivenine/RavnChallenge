@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements DownloadCallback
 {
 	public static final  String host = "192.168.7.106";
@@ -19,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 	private RecyclerView.LayoutManager layoutManager;
 
 	private Opera[] placeholder;
+
+	private ArrayList<Media> operas = new ArrayList<>();
 
 	private boolean downloading;
 
@@ -102,5 +106,24 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 		{
 			networkFragment.cancelNetworkActivity();
 		}
+	}
+
+
+	public ArrayList<Media> getOperas()
+	{
+		return operas;
+	}
+
+
+	/**
+	 * Set the list of operas and update the UI to reflect changes
+	 * @param operas
+	 */
+	public void setOperas(ArrayList<Media> operas)
+	{
+		this.operas = operas;
+
+		adapter = new DataAdapter( this.operas );
+		recyclerView.setAdapter( adapter );
 	}
 }
