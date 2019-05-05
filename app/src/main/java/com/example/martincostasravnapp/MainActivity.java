@@ -1,21 +1,12 @@
 package com.example.martincostasravnapp;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity implements DownloadCallback
 {
@@ -59,7 +50,10 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 		{
 			downloading = true;
 			networkFragment = NetworkFragment.getInstance( getSupportFragmentManager() );
-			networkFragment.startDownload();
+			//networkFragment.startDownload();
+
+			// First, request the most current list of data
+			networkFragment.sendRequest(Request.generateListRequest());
 		}
 	}
 
@@ -106,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements DownloadCallback
 		downloading = false;
 		if ( networkFragment != null )
 		{
-			networkFragment.cancelDownload();
+			networkFragment.cancelNetworkActivity();
 		}
 	}
 }

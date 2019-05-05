@@ -10,13 +10,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URL;
 
 
 /**
@@ -27,7 +29,10 @@ public class NetworkFragment extends Fragment
 	public static final String TAG = "NetworkFragment";
 
 	private DownloadCallback<String> callback;
-	private DownloadTask             downloadTask;
+	private NetworkTask              networkTask;
+
+	private Socket client;
+
 
 	/**
 	 * Static initializer for NetworkFragment that sets the URL of the host it will be downloading
@@ -70,97 +75,133 @@ public class NetworkFragment extends Fragment
 	public void onDestroy()
 	{
 		// Cancel task when Fragment is destroyed.
-		cancelDownload();
+		cancelNetworkActivity();
 		super.onDestroy();
 	}
 
+	public int sendRequest(Request request)
+	{
+		cancelNetworkActivity();
+		networkTask = new NetworkTask( callback );
+		networkTask.execute(request);
+
+		return 0;
+	}
+
 
 	/**
-	 * Start non-blocking execution of DownloadTask.
+	 * Start non-blocking execution of NetworkTask.
 	 */
 	public void startDownload()
 	{
-		cancelDownload();
-		downloadTask = new DownloadTask( callback );
-		downloadTask.execute();
+		cancelNetworkActivity();
+		networkTask = new NetworkTask( callback );
+		networkTask.execute();
 	}
 
 
 	/**
-	 * Cancel (and interrupt if necessary) any ongoing DownloadTask execution.
+	 * Cancel (and interrupt if necessary) any ongoing NetworkTask execution.
 	 */
-	public void cancelDownload()
+	public void cancelNetworkActivity()
 	{
-		if ( downloadTask != null )
+		if ( networkTask != null )
 		{
-			downloadTask.cancel( true );
+			networkTask.cancel( true );
 		}
 	}
 
+
 	/**
-	 * Implementation of AsyncTask designed to fetch data from the network.
+	 * Communicates with the server in background
 	 */
-	private class DownloadTask extends AsyncTask<Void, Integer, DownloadTask.Result>
+	private class NetworkTask extends AsyncTask<Request, Integer, NetworkTask.Result>
 	{
 
 		private DownloadCallback<String> callback;
 
-		DownloadTask(DownloadCallback<String> callback) {
-			setCallback(callback);
+
+		NetworkTask(DownloadCallback<String> callback)
+		{
+			setCallback( callback );
 		}
 
-		void setCallback(DownloadCallback<String> callback) {
+
+		void setCallback(DownloadCallback<String> callback)
+		{
 			this.callback = callback;
 		}
+
 
 		/**
 		 * Wrapper class that serves as a union of a result value and an exception. When the download
 		 * task has completed, either the result value or exception can be a non-null value.
 		 * This allows you to pass exceptions to the UI thread that were thrown during doInBackground().
 		 */
-		 class Result {
-			public String resultValue;
+		class Result
+		{
+			public String    resultValue;
 			public Exception exception;
-			public Result(String resultValue) {
+
+
+			public Result(String resultValue)
+			{
 				this.resultValue = resultValue;
 			}
-			public Result(Exception exception) {
+
+
+			public Result(Exception exception)
+			{
 				this.exception = exception;
 			}
 		}
+
 
 		/**
 		 * Cancel background network operation if we do not have network connectivity.
 		 */
 		@Override
-		protected void onPreExecute() {
-			if (callback != null) {
+		protected void onPreExecute()
+		{
+			if ( callback != null )
+			{
 				NetworkInfo networkInfo = callback.getActiveNetworkInfo();
-				if (networkInfo == null || !networkInfo.isConnected() ||
-							(networkInfo.getType() != ConnectivityManager.TYPE_WIFI
-									 && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE)) {
+				if ( networkInfo == null || !networkInfo.isConnected() || ( networkInfo.getType() != ConnectivityManager.TYPE_WIFI && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE ) )
+				{
 					// If no connectivity, cancel task and update Callback with null data.
-					callback.updateFromDownload(null);
-					cancel(true);
+					callback.updateFromDownload( null );
+					cancel( true );
 				}
 			}
 		}
+
 
 		/**
 		 * Defines work to perform on the background thread.
 		 */
 		@Override
-		protected DownloadTask.Result doInBackground(Void... params) {
+		protected NetworkTask.Result doInBackground(Request... params)
+		{
 			Result result = null;
-			if (!isCancelled()) {
-				try {
+			if ( !isCancelled() && params != null && params.length > 0)
+			{
+				try
+				{
 					connectToServer();
-				} catch(Exception e) {
-					result = new Result(e);
+
+					for ( Request r : params )
+					{
+						sendRequestInBackground( r );
+					}
+				}
+				catch ( Exception e )
+				{
+					result = new Result( e );
 				}
 			}
 			return result;
 		}
+
 
 		private void connectToServer() throws IOException
 		{
@@ -168,9 +209,9 @@ public class NetworkFragment extends Fragment
 			int port = MainActivity.port;
 
 			Log.d( TAG, "Connecting to " + host + " on port " + port );
-			Socket client = new Socket( host, port );
+			client = new Socket( host, port );
 
-			Log.d( TAG, "Just connected to " + client.getRemoteSocketAddress() );
+			/*Log.d( TAG, "Just connected to " + client.getRemoteSocketAddress() );
 			OutputStream outToServer = client.getOutputStream();
 			DataOutputStream out = new DataOutputStream( outToServer );
 
@@ -179,6 +220,32 @@ public class NetworkFragment extends Fragment
 			DataInputStream in = new DataInputStream( inFromServer );
 
 			Log.d( TAG, "Server says " + in.readUTF() );
+			client.close();*/
+		}
+
+
+		private void sendRequestInBackground(Request request) throws IOException
+		{
+			OutputStream outToServer = client.getOutputStream();
+			DataOutputStream out = new DataOutputStream( outToServer );
+
+			try
+			{
+				JSONObject jsonRequest = request.toJSONObject();
+				out.writeUTF( jsonRequest.toString() );
+			}
+			catch ( JSONException e )
+			{
+				e.printStackTrace();
+			}
+
+			//out.writeUTF( "" );
+
+			//out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
+			//InputStream inFromServer = client.getInputStream();
+			//DataInputStream in = new DataInputStream( inFromServer );
+
+			//Log.d( TAG, "Server says " + in.readUTF() );
 			client.close();
 		}
 
@@ -187,22 +254,29 @@ public class NetworkFragment extends Fragment
 		 * Updates the DownloadCallback with the result.
 		 */
 		@Override
-		protected void onPostExecute(Result result) {
-			if (result != null && callback != null) {
-				if (result.exception != null) {
-					callback.updateFromDownload(result.exception.getMessage());
-				} else if (result.resultValue != null) {
-					callback.updateFromDownload(result.resultValue);
+		protected void onPostExecute(Result result)
+		{
+			if ( result != null && callback != null )
+			{
+				if ( result.exception != null )
+				{
+					callback.updateFromDownload( result.exception.getMessage() );
+				}
+				else if ( result.resultValue != null )
+				{
+					callback.updateFromDownload( result.resultValue );
 				}
 				callback.finishDownloading();
 			}
 		}
 
+
 		/**
 		 * Override to add special behavior for cancelled AsyncTask.
 		 */
 		@Override
-		protected void onCancelled(Result result) {
+		protected void onCancelled(Result result)
+		{
 		}
 	}
 
