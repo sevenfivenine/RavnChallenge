@@ -39,6 +39,10 @@ public class NetworkManager
 	private DownloadCallback<String> callback;
 	private NetworkTask              networkTask;
 
+	public ArrayList<Media> loadedMedia;
+
+	public boolean initialListCompleted;	// When the app starts, we request LIST, so it is important not to read from in until this is finished
+
 	private Socket client;
 
 	DataInputStream  in;
@@ -107,7 +111,6 @@ public class NetworkManager
 	{
 
 		private DownloadCallback<String> callback;
-		private ArrayList<Media> loadedMedia;
 
 		NetworkTask(DownloadCallback<String> callback)
 		{
@@ -294,7 +297,6 @@ public class NetworkManager
 				{
 					callback.updateFromDownload( result.resultValue );
 				}
-
 
 				callback.finishDownloading();
 			}

@@ -74,9 +74,14 @@ public class RavnApplication extends Application implements DownloadCallback
 						continue;
 					}
 
+					if ( !networkManager.initialListCompleted )
+					{
+						continue;
+					}
+
 					try
 					{
-						if(networkManager.in.available() > 0)
+						if(networkManager != null && networkManager.in != null && networkManager.in.available() > 0)
 						{
 							String responseString = networkManager.in.readUTF();
 
@@ -101,24 +106,26 @@ public class RavnApplication extends Application implements DownloadCallback
 	{
 		String responseData = networkManager.in.readUTF();
 
-		/*try
+		try
 		{
 			JSONArray listJSONarray = new JSONArray( responseData );
 
-			loadedMedia = new ArrayList<>();
+			networkManager.loadedMedia = new ArrayList<>();
 
 			for ( int i = 0; i < listJSONarray.length(); i++ )
 			{
 				JSONObject jsonObject = (JSONObject) listJSONarray.get( i );
 				Media media = Media.JSONtoMedia( jsonObject );
 
-				loadedMedia.add( media );
+				networkManager.loadedMedia.add( media );
 			}
+
+			setOperas( networkManager.loadedMedia, null );
 		}
 		catch ( JSONException e )
 		{
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 	@Override

@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity
 
 	private Opera[] placeholder;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity
 			public void onClick(View view)
 			{
 				// Open EditActivity to add a new media record
-				Intent intent = new Intent(MainActivity.this, EditActivity.class);
+				Intent intent = new Intent( MainActivity.this, EditActivity.class );
 				startActivity( intent );
 			}
 		} );
@@ -63,15 +64,30 @@ public class MainActivity extends AppCompatActivity
 		//adapter = new DataAdapter( placeholder );
 		//recyclerView.setAdapter( adapter );
 
+
+	}
+
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
 		// First, request the most current list of data
 		NetworkManager networkManager = NetworkManager.getSingleton();
-		networkManager.sendRequest(this, Request.generateListRequest());
+		networkManager.sendRequest( this, Request.generateListRequest() );
+
+		refreshUI();
 	}
+
 
 	public void refreshUI()
 	{
 		adapter = new DataAdapter( application.getOperas() );
 		recyclerView.setAdapter( adapter );
+
+		NetworkManager networkManager = NetworkManager.getSingleton();
+		//networkManager.initialListCompleted = true;
 	}
 
 
