@@ -87,7 +87,7 @@ public class Request
 
 		if ( record != null )
 		{
-			jsonObject.put( KEY_RECORD, record );
+			jsonObject.put( KEY_RECORD, record.toJSONObject() );
 		}
 
 		if ( id != -1 )

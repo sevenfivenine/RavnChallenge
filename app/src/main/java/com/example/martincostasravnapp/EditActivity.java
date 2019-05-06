@@ -14,6 +14,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 	private EditText titleEditText, authorEditText, typeEditText, dateEditText;
 	private Button saveButton;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -37,20 +38,18 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 		if ( v.equals( saveButton ) )
 		{
 			// If all fields are blank, no new record is created
-			if ( titleEditText.getText().length() == 0 && authorEditText.getText().length() == 0
-						 && typeEditText.getText().length() == 0 && dateEditText.getText().length() == 0 )
+			if ( titleEditText.getText().length() == 0 && authorEditText.getText().length() == 0 && typeEditText.getText().length() == 0 && dateEditText.getText().length() == 0 )
 			{
-				Toast.makeText(getApplicationContext(), R.string.no_record, Toast.LENGTH_SHORT ).show();
+				Toast.makeText( getApplicationContext(), R.string.no_record, Toast.LENGTH_SHORT ).show();
 
-				Intent intent = new Intent( this, MainActivity.class);
+				Intent intent = new Intent( this, MainActivity.class );
 				startActivity( intent );
 			}
 
 			// Otherwise, ALL fields must be filled to add or edit a record. If not, tell the user to add more information
-			else if (titleEditText.getText().length() == 0 || authorEditText.getText().length() == 0
-							 || typeEditText.getText().length() == 0 || dateEditText.getText().length() == 0)
+			else if ( titleEditText.getText().length() == 0 || authorEditText.getText().length() == 0 || typeEditText.getText().length() == 0 || dateEditText.getText().length() == 0 )
 			{
-				Toast.makeText(getApplicationContext(), R.string.empty_fields, Toast.LENGTH_SHORT ).show();
+				Toast.makeText( getApplicationContext(), R.string.empty_fields, Toast.LENGTH_SHORT ).show();
 			}
 
 			// All fields are filled out. We are adding or editing a record
@@ -62,7 +61,9 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 				record.setType( typeEditText.getText().toString() );
 				record.setDate( dateEditText.getText().toString() );
 
-				Request.generateAddRequest( record );
+				// Send ADD or EDIT request
+				NetworkManager networkManager = NetworkManager.getSingleton();
+				networkManager.sendRequest( this, Request.generateAddRequest( record ) );
 			}
 		}
 	}

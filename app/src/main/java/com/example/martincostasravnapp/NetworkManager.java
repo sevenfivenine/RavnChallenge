@@ -28,6 +28,11 @@ public class NetworkManager
 {
 	public static final String TAG = "NetworkManager";
 
+	public static final int RESPONSE_OK    = 0;
+	public static final int RESPONSE_ERROR = 1;
+	public static final int RESPONSE_PUSH  = 2;
+	public static final int RESPONSE_LIST  = 3;
+
 	private static RavnApplication ravnApplication;
 
 	private Activity                 activity;
@@ -36,11 +41,16 @@ public class NetworkManager
 
 	private Socket client;
 
+	DataInputStream  in;
+	DataOutputStream out;
+
+
 	public NetworkManager(RavnApplication ravnApplication)
 	{
 		callback = (DownloadCallback<String>) ravnApplication;
 		NetworkManager.ravnApplication = ravnApplication;
 	}
+
 
 	public static NetworkManager getSingleton()
 	{
@@ -55,14 +65,13 @@ public class NetworkManager
 	}
 
 
-
 	public int sendRequest(Activity activity, Request request)
 	{
 		this.activity = activity;
 
 		cancelNetworkActivity();
 		networkTask = new NetworkTask( callback );
-		networkTask.execute(request);
+		networkTask.execute( request );
 
 		return 0;
 	}
@@ -98,6 +107,7 @@ public class NetworkManager
 	{
 
 		private DownloadCallback<String> callback;
+		private ArrayList<Media> loadedMedia;
 
 		NetworkTask(DownloadCallback<String> callback)
 		{
@@ -108,9 +118,6 @@ public class NetworkManager
 		{
 			this.callback = callback;
 		}
-
-		private ArrayList<Media> loadedMedia;
-
 
 		/**
 		 * Wrapper class that serves as a union of a result value and an exception. When the download
@@ -162,7 +169,7 @@ public class NetworkManager
 		protected NetworkTask.Result doInBackground(Request... params)
 		{
 			Result result = null;
-			if ( !isCancelled() && params != null && params.length > 0)
+			if ( !isCancelled() && params != null && params.length > 0 )
 			{
 				try
 				{
@@ -192,26 +199,27 @@ public class NetworkManager
 
 			Log.d( TAG, "Just connected to " + client.getRemoteSocketAddress() );
 			/**OutputStream outToServer = client.getOutputStream();
-			DataOutputStream out = new DataOutputStream( outToServer );
+			 DataOutputStream out = new DataOutputStream( outToServer );
 
-			out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
-			InputStream inFromServer = client.getInputStream();
-			DataInputStream in = new DataInputStream( inFromServer );
+			 out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
+			 InputStream inFromServer = client.getInputStream();
+			 DataInputStream in = new DataInputStream( inFromServer );
 
-			Log.d( TAG, "Server says " + in.readUTF() );
-			client.close();*/
+			 Log.d( TAG, "Server says " + in.readUTF() );
+			 client.close();*/
 		}
 
 
 		/**
 		 * Sends request and reads the response
+		 *
 		 * @param request
 		 * @throws IOException
 		 */
 		private void sendRequestInBackground(Request request) throws IOException
 		{
 			OutputStream outToServer = client.getOutputStream();
-			DataOutputStream out = new DataOutputStream( outToServer );
+			out = new DataOutputStream( outToServer );
 
 			try
 			{
@@ -227,29 +235,46 @@ public class NetworkManager
 
 			//out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
 			InputStream inFromServer = client.getInputStream();
-			DataInputStream in = new DataInputStream( inFromServer );
+			in = new DataInputStream( inFromServer );
 			//Log.d( TAG, "Server says " + in.readUTF() );
 
-			try
+			String responseString = in.readUTF();
+
+			int responseCode = Integer.parseInt( responseString );
+
+			switch ( responseCode )
 			{
-				JSONArray listJSONarray = new JSONArray( in.readUTF() );
+				case RESPONSE_OK:
+					break;
+				case RESPONSE_ERROR:
+					break;
+				case RESPONSE_PUSH:
+					break;
+				case RESPONSE_LIST:
+					String responseData = in.readUTF();
 
-				loadedMedia = new ArrayList<>();
+					try
+					{
+						JSONArray listJSONarray = new JSONArray( responseData );
 
-				for ( int i = 0; i < listJSONarray.length(); i++ )
-				{
-					JSONObject jsonObject = (JSONObject) listJSONarray.get( i );
-					Media media = Media.JSONtoMedia( jsonObject );
+						loadedMedia = new ArrayList<>();
 
-					loadedMedia.add( media );
-				}
+						for ( int i = 0; i < listJSONarray.length(); i++ )
+						{
+							JSONObject jsonObject = (JSONObject) listJSONarray.get( i );
+							Media media = Media.JSONtoMedia( jsonObject );
+
+							loadedMedia.add( media );
+						}
+					}
+					catch ( JSONException e )
+					{
+						e.printStackTrace();
+					}
+					break;
 			}
-			catch ( JSONException e )
-			{
-				e.printStackTrace();
-			}
 
-			client.close();
+
 		}
 
 
@@ -269,7 +294,6 @@ public class NetworkManager
 				{
 					callback.updateFromDownload( result.resultValue );
 				}
-
 
 
 				callback.finishDownloading();
