@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Looper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +25,8 @@ public class RavnApplication extends Application implements DownloadCallback
 	private ArrayList<Media> operas = new ArrayList<>();
 
 	private boolean pushThreadInterrupted;
+
+	private MainActivity mainActivity;
 
 	@Override
 	public void onCreate()
@@ -52,6 +55,11 @@ public class RavnApplication extends Application implements DownloadCallback
 	public void onLowMemory()
 	{
 		super.onLowMemory();
+	}
+
+	public void setMainActivity(MainActivity mainActivity)
+	{
+		this.mainActivity = mainActivity;
 	}
 
 	@Override
@@ -85,7 +93,7 @@ public class RavnApplication extends Application implements DownloadCallback
 						{
 							String responseString = networkManager.in.readUTF();
 
-							int responseCode = Integer.parseInt( responseString.substring( 0, 1 ));
+							int responseCode = Integer.parseInt( responseString);
 
 							if ( responseCode == NetworkManager.RESPONSE_PUSH )
 							{
@@ -120,7 +128,7 @@ public class RavnApplication extends Application implements DownloadCallback
 				networkManager.loadedMedia.add( media );
 			}
 
-			setOperas( networkManager.loadedMedia, null );
+			setOperas( networkManager.loadedMedia, mainActivity );
 		}
 		catch ( JSONException e )
 		{
@@ -190,9 +198,25 @@ public class RavnApplication extends Application implements DownloadCallback
 
 		if ( activity instanceof MainActivity )
 		{
-			MainActivity mainActivity = (MainActivity) activity;
+			final MainActivity mainActivity = (MainActivity) activity;
 
-			mainActivity.refreshUI();
+			// If we are not on the UI thread, send task to UI thread
+			if ( Looper.myLooper() != Looper.getMainLooper() )
+			{
+				mainActivity.runOnUiThread( new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						mainActivity.refreshUI();
+					}
+				} );
+			}
+
+			else
+			{
+				mainActivity.refreshUI();
+			}
 		}
 	}
 }

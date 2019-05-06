@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity
 		setContentView( R.layout.activity_main );
 
 		application = (RavnApplication) getApplication();
+		application.setMainActivity( this );
 
 		// Placeholder data before server connection
 		Opera placeholderItem = new Opera( "Lorem Ipsum", "Dolor sit amet", "consectetur " );

@@ -274,6 +274,9 @@ public class NetworkManager
 					{
 						e.printStackTrace();
 					}
+
+					initialListCompleted = true;
+
 					break;
 			}
 

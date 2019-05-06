@@ -64,6 +64,9 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 				// Send ADD or EDIT request
 				NetworkManager networkManager = NetworkManager.getSingleton();
 				networkManager.sendRequest( this, Request.generateAddRequest( record ) );
+
+				Intent intent = new Intent( this, MainActivity.class );
+				startActivity( intent );
 			}
 		}
 	}
