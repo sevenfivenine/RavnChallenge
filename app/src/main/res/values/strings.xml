@@ -9,4 +9,5 @@
 
     <string name="no_record">No new record created</string>
     <string name="empty_fields">Please fill empty fields to continue</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -20,7 +20,7 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 {
 
 	private EditText titleEditText, authorEditText, typeEditText, dateEditText;
-	private Button saveButton;
+	private Button saveButton, deleteButton;
 
 	private UUID id;
 
@@ -43,8 +43,10 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 		dateEditText = findViewById( R.id.dateEditText );
 
 		saveButton = findViewById( R.id.saveButton );
+		deleteButton = findViewById( R.id.deleteButton );
 
 		saveButton.setOnClickListener( this );
+		deleteButton.setOnClickListener( this );
 
 		mode = Mode.ADD_MODE;
 
@@ -122,6 +124,16 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 					startActivity( intent );
 				}
 			}
+		}
+
+		else if ( v.equals( deleteButton ) )
+		{
+			// Send REMOVE request
+			NetworkManager networkManager = NetworkManager.getSingleton();
+			networkManager.sendRequest( this, Request.generateRemoveRequest( id ) );
+
+			Intent intent = new Intent( this, MainActivity.class );
+			startActivity( intent );
 		}
 	}
 }
