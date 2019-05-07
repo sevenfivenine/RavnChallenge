@@ -8,11 +8,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.UUID;
+
+import static com.example.martincostasravnapp.Media.KEY_AUTHOR;
+import static com.example.martincostasravnapp.Media.KEY_DATE;
+import static com.example.martincostasravnapp.Media.KEY_ID;
+import static com.example.martincostasravnapp.Media.KEY_TITLE;
+import static com.example.martincostasravnapp.Media.KEY_TYPE;
+
 public class EditActivity extends AppCompatActivity implements View.OnClickListener
 {
 
 	private EditText titleEditText, authorEditText, typeEditText, dateEditText;
 	private Button saveButton;
+
+	private UUID id;
+
+	private enum Mode {
+		ADD_MODE, EDIT_MODE
+	};
+
+	private Mode mode;
 
 
 	@Override
@@ -29,6 +45,29 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 		saveButton = findViewById( R.id.saveButton );
 
 		saveButton.setOnClickListener( this );
+
+		mode = Mode.ADD_MODE;
+
+		Intent intent = getIntent();
+
+		if ( intent.hasExtra( KEY_TITLE ) && intent.hasExtra( KEY_AUTHOR ) && intent.hasExtra( KEY_TYPE ) && intent.hasExtra( KEY_DATE ) && intent.hasExtra( KEY_ID ) )
+		{
+			String title = intent.getStringExtra( KEY_TITLE );
+			String author = intent.getStringExtra( KEY_AUTHOR );
+			String type = intent.getStringExtra( KEY_TYPE );
+			String date = intent.getStringExtra( KEY_DATE );
+			UUID id = UUID.fromString(intent.getStringExtra( KEY_ID ));
+
+			titleEditText.setText( title );
+			authorEditText.setText( author );
+			typeEditText.setText( type );
+			dateEditText.setText( date );
+
+			this.id = id;
+
+			mode = Mode.EDIT_MODE;
+		}
+
 	}
 
 
@@ -61,12 +100,27 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 				record.setType( typeEditText.getText().toString() );
 				record.setDate( dateEditText.getText().toString() );
 
-				// Send ADD or EDIT request
-				NetworkManager networkManager = NetworkManager.getSingleton();
-				networkManager.sendRequest( this, Request.generateAddRequest( record ) );
+				if ( mode == Mode.ADD_MODE )
+				{
+					// Send ADD request
+					NetworkManager networkManager = NetworkManager.getSingleton();
+					networkManager.sendRequest( this, Request.generateAddRequest( record ) );
 
-				Intent intent = new Intent( this, MainActivity.class );
-				startActivity( intent );
+					Intent intent = new Intent( this, MainActivity.class );
+					startActivity( intent );
+				}
+
+				else if ( mode == Mode.EDIT_MODE )
+				{
+					record.setId( id );
+
+					// Send UPDATE request
+					NetworkManager networkManager = NetworkManager.getSingleton();
+					networkManager.sendRequest( this, Request.generateUpdateRequest( record ) );
+
+					Intent intent = new Intent( this, MainActivity.class );
+					startActivity( intent );
+				}
 			}
 		}
 	}

@@ -9,9 +9,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.UUID;
+
+import static com.example.martincostasravnapp.Media.KEY_AUTHOR;
+import static com.example.martincostasravnapp.Media.KEY_DATE;
+import static com.example.martincostasravnapp.Media.KEY_ID;
+import static com.example.martincostasravnapp.Media.KEY_TITLE;
+import static com.example.martincostasravnapp.Media.KEY_TYPE;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -84,12 +94,41 @@ public class MainActivity extends AppCompatActivity
 
 	public void refreshUI()
 	{
-		adapter = new DataAdapter( application.getOperas() );
+		DataAdapter.RecyclerViewClickListener listener = new DataAdapter.RecyclerViewClickListener()
+		{
+			@Override
+			public void onClick(View v, int position)
+			{
+				Intent intent = new Intent(MainActivity.this, EditActivity.class);
+
+				DataAdapter dataAdapter = (DataAdapter) recyclerView.getAdapter();
+				Media media = dataAdapter.getDataset().get( position );
+
+				TextView textViewName = v.findViewById( R.id.textViewName );
+				TextView textViewComposer = v.findViewById( R.id.textViewComposer );
+				TextView textViewSubgenre = v.findViewById( R.id.textViewSubGenre );
+				TextView textViewDate = v.findViewById( R.id.textViewDate );
+
+				String title = (String) textViewName.getText();
+				String author = (String) textViewComposer.getText();
+				String type = (String) textViewSubgenre.getText();
+				String date = (String) textViewDate.getText();
+				UUID id = media.getId();
+
+				intent.putExtra( KEY_TITLE, title );
+				intent.putExtra( KEY_AUTHOR, author );
+				intent.putExtra( KEY_TYPE, type );
+				intent.putExtra( KEY_DATE, date );
+				intent.putExtra( KEY_ID, id.toString() );
+				startActivity(intent);
+			}
+		};
+
+		adapter = new DataAdapter( application.getOperas(), listener );
 		recyclerView.setAdapter( adapter );
 
 		NetworkManager networkManager = NetworkManager.getSingleton();
 		//networkManager.initialListCompleted = true;
 	}
-
 
 }
