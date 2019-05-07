@@ -68,7 +68,6 @@ public class NetworkManager
 		cancelNetworkActivity();
 	}
 
-
 	public int sendRequest(Activity activity, Request request)
 	{
 		this.activity = activity;
@@ -172,22 +171,34 @@ public class NetworkManager
 		protected NetworkTask.Result doInBackground(Request... params)
 		{
 			Result result = null;
-			if ( !isCancelled() && params != null && params.length > 0 )
+
+			try
 			{
-				try
+				if ( client == null )
 				{
 					connectToServer();
+				}
 
+				else if ( !client.isConnected() )
+				{
+					connectToServer();
+				}
+
+				if ( !isCancelled() && params != null && params.length > 0 )
+				{
 					for ( Request r : params )
 					{
 						sendRequestInBackground( r );
 					}
 				}
-				catch ( Exception e )
-				{
-					result = new Result( e );
-				}
+
 			}
+			catch ( Exception e )
+			{
+				result = new Result( e );
+			}
+
+
 			return result;
 		}
 
@@ -201,6 +212,13 @@ public class NetworkManager
 			client = new Socket( host, port );
 
 			Log.d( TAG, "Just connected to " + client.getRemoteSocketAddress() );
+
+			OutputStream outToServer = client.getOutputStream();
+			out = new DataOutputStream( outToServer );
+
+			InputStream inFromServer = client.getInputStream();
+			in = new DataInputStream( inFromServer );
+
 			/**OutputStream outToServer = client.getOutputStream();
 			 DataOutputStream out = new DataOutputStream( outToServer );
 
@@ -221,9 +239,6 @@ public class NetworkManager
 		 */
 		private void sendRequestInBackground(Request request) throws IOException
 		{
-			OutputStream outToServer = client.getOutputStream();
-			out = new DataOutputStream( outToServer );
-
 			try
 			{
 				JSONObject jsonRequest = request.toJSONObject();
@@ -237,15 +252,14 @@ public class NetworkManager
 			//out.writeUTF( "" );
 
 			//out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
-			InputStream inFromServer = client.getInputStream();
-			in = new DataInputStream( inFromServer );
+
 			//Log.d( TAG, "Server says " + in.readUTF() );
 
-			String responseString = in.readUTF();
+			//String responseString = in.readUTF();
 
-			int responseCode = Integer.parseInt( responseString );
+			//int responseCode = Integer.parseInt( responseString );
 
-			switch ( responseCode )
+			/*switch ( responseCode )
 			{
 				case RESPONSE_OK:
 					break;
@@ -278,7 +292,7 @@ public class NetworkManager
 					initialListCompleted = true;
 
 					break;
-			}
+			}*/
 
 
 		}

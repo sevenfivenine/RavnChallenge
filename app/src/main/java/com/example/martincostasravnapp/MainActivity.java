@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity
 
 		// First, request the most current list of data
 		NetworkManager networkManager = NetworkManager.getSingleton();
-		networkManager.sendRequest( this, Request.generateListRequest() );
+		networkManager.sendRequest( this, null);
 
-		refreshUI();
+		//refreshUI();
 	}
 
 
@@ -124,8 +124,12 @@ public class MainActivity extends AppCompatActivity
 			}
 		};
 
-		adapter = new DataAdapter( application.getOperas(), listener );
-		recyclerView.setAdapter( adapter );
+		if ( application.getOperas() != null )
+		{
+			adapter = new DataAdapter( application.getOperas(), listener );
+			recyclerView.setAdapter( adapter );
+		}
+
 
 		NetworkManager networkManager = NetworkManager.getSingleton();
 		//networkManager.initialListCompleted = true;

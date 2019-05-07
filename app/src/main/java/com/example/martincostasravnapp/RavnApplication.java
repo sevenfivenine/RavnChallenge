@@ -28,6 +28,7 @@ public class RavnApplication extends Application implements DownloadCallback
 
 	private MainActivity mainActivity;
 
+
 	@Override
 	public void onCreate()
 	{
@@ -57,10 +58,12 @@ public class RavnApplication extends Application implements DownloadCallback
 		super.onLowMemory();
 	}
 
+
 	public void setMainActivity(MainActivity mainActivity)
 	{
 		this.mainActivity = mainActivity;
 	}
+
 
 	@Override
 	public NetworkInfo getActiveNetworkInfo()
@@ -70,10 +73,13 @@ public class RavnApplication extends Application implements DownloadCallback
 		return networkInfo;
 	}
 
+
 	public void startListeningForPush()
 	{
-		new Thread(new Runnable() {
-			public void run() {
+		new Thread( new Runnable()
+		{
+			public void run()
+			{
 
 				while ( !pushThreadInterrupted )
 				{
@@ -82,23 +88,33 @@ public class RavnApplication extends Application implements DownloadCallback
 						continue;
 					}
 
-					if ( !networkManager.initialListCompleted )
+					/*if ( !networkManager.initialListCompleted )
 					{
 						continue;
-					}
+					}*/
 
 					try
 					{
-						if(networkManager != null && networkManager.in != null && networkManager.in.available() > 0)
+						if ( networkManager != null && networkManager.in != null && networkManager.in.available() > 0 )
 						{
 							String responseString = networkManager.in.readUTF();
 
-							int responseCode = Integer.parseInt( responseString);
-
-							if ( responseCode == NetworkManager.RESPONSE_PUSH )
+							try
 							{
-								updateFromPush();
+								int responseCode = Integer.parseInt( responseString );
+
+								if ( responseCode == NetworkManager.RESPONSE_PUSH )
+								{
+									updateFromPush();
+								}
 							}
+
+							catch ( NumberFormatException e )
+							{
+								e.printStackTrace();
+							}
+
+
 						}
 					}
 					catch ( IOException e )
@@ -107,8 +123,9 @@ public class RavnApplication extends Application implements DownloadCallback
 					}
 				}
 			}
-		}).start();
+		} ).start();
 	}
+
 
 	public void updateFromPush() throws IOException
 	{
@@ -135,6 +152,7 @@ public class RavnApplication extends Application implements DownloadCallback
 			e.printStackTrace();
 		}
 	}
+
 
 	@Override
 	public void updateFromDownload(Object result)
