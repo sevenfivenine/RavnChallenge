@@ -29,6 +29,8 @@ import static com.example.martincostasravnapp.Media.KEY_DATE;
 import static com.example.martincostasravnapp.Media.KEY_ID;
 import static com.example.martincostasravnapp.Media.KEY_TITLE;
 import static com.example.martincostasravnapp.Media.KEY_TYPE;
+import static com.example.martincostasravnapp.Media.ORDER_ASCENDING;
+import static com.example.martincostasravnapp.Media.ORDER_DESCENDING;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -156,52 +158,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			case R.id.sortTitleAZ:
 				send = true;
 				request.setField( KEY_TITLE );
-				request.setOrder( 1 );
+				request.setOrder( ORDER_ASCENDING );
 				break;
 
 			case R.id.sortTitleZA:
 				send = true;
 				request.setField( KEY_TITLE );
-				request.setOrder( 0 );
+				request.setOrder( ORDER_DESCENDING );
 				break;
 
 
 			case R.id.sortAuthorAZ:
 				send = true;
 				request.setField( KEY_AUTHOR );
-				request.setOrder( 1 );
+				request.setOrder( ORDER_ASCENDING );
 				break;
 
 			case R.id.sortAuthorZA:
 				send = true;
 				request.setField( KEY_AUTHOR );
-				request.setOrder( 0 );
+				request.setOrder( ORDER_DESCENDING );
 				break;
 
 
 			case R.id.sortTypeAZ:
 				send = true;
 				request.setField( KEY_TYPE );
-				request.setOrder( 1 );
+				request.setOrder( ORDER_ASCENDING );
 				break;
 
 			case R.id.sortTypeZA:
 				send = true;
 				request.setField( KEY_TYPE );
-				request.setOrder( 0 );
+				request.setOrder( ORDER_DESCENDING );
 				break;
 
 
 			case R.id.sortDateAscending:
 				send = true;
 				request.setField( KEY_DATE );
-				request.setOrder( 1 );
+				request.setOrder( ORDER_ASCENDING );
 				break;
 
 			case R.id.sortDateDescending:
 				send = true;
 				request.setField( KEY_DATE );
-				request.setOrder( 0 );
+				request.setOrder( ORDER_DESCENDING );
 				break;
 
 
