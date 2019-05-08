@@ -10,8 +10,19 @@
     <string name="no_record">No new record created</string>
     <string name="empty_fields">Please fill empty fields to continue</string>
     <string name="delete">Delete</string>
-    <string name="connectInstruction">Connect to a server:</string>
+    <string name="connect_instruction">Connect to a server:</string>
     <string name="connect">Connect</string>
     <string name="ip">IP Address</string>
     <string name="no_ip">Please enter a valid IP Address</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by">SORT BY</string>
+    <string name="sort_title_AZ">Name of opera (A to Z)</string>
+    <string name="sort_title_ZA">Name of opera (Z to A)</string>
+    <string name="sort_author_AZ">Composer (A to Z)</string>
+    <string name="sort_author_ZA">Composer (Z to A)</string>
+    <string name="sort_type_AZ">Subgenre (A to Z)</string>
+    <string name="sort_type_ZA">Subgenre (Z to A)</string>
+    <string name="sort_date_ascending">Chronological</string>
+    <string name="sort_date_descending">Reverse chronological</string>
+
 </resources>

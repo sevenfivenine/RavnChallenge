@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity
 	private RecyclerView.LayoutManager layoutManager;
 
 	private FloatingActionButton addMediaFab;
+
+	private LinearLayout bottomSheet;
 
 	private RavnApplication application;
 
@@ -63,6 +70,10 @@ public class MainActivity extends AppCompatActivity
 			}
 		} );
 
+		bottomSheet = findViewById( R.id.sortBottomSheet );
+		BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from( bottomSheet );
+		bottomSheetBehavior.setState( BottomSheetBehavior.STATE_HIDDEN );
+
 		recyclerView = (RecyclerView) findViewById( R.id.mainRecyclerView );
 
 		// Improves performance; size of this view will never change
@@ -83,6 +94,33 @@ public class MainActivity extends AppCompatActivity
 
 
 		//refreshUI();
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.activity_main_menu, menu);
+		return true;
+	}
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		if ( item.getItemId() == R.id.sortMenuItem )
+		{
+			BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from( bottomSheet );
+			bottomSheetBehavior.setState( BottomSheetBehavior.STATE_EXPANDED );
+
+			return true;
+		}
+
+		else
+		{
+			return super.onOptionsItemSelected( item );
+		}
 	}
 
 

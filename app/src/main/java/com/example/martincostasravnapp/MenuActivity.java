@@ -34,6 +34,17 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
 		application = (RavnApplication) getApplication();
 
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences( this );
+		if ( preferences.contains( KEY_HOST ) )
+		{
+			String host = preferences.getString( KEY_HOST, "" );
+
+			application.connectToHost(this, host);
+
+			Intent intent = new Intent( this, MainActivity.class );
+			startActivity( intent );
+		}
+
 	}
 
 
@@ -59,8 +70,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
 				application.connectToHost(this, host);
 
-				Intent intent = new Intent( this, MainActivity.class );
-				startActivity( intent );
+
 			}
 		}
 	}
