@@ -30,9 +30,9 @@ import static com.example.martincostasravnapp.Media.KEY_ID;
 import static com.example.martincostasravnapp.Media.KEY_TITLE;
 import static com.example.martincostasravnapp.Media.KEY_TYPE;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
-	private static final String TAG  = "MainActivity";
+	private static final String TAG = "MainActivity";
 
 	private RecyclerView               recyclerView;
 	private RecyclerView.Adapter       adapter;
@@ -40,8 +40,10 @@ public class MainActivity extends AppCompatActivity
 
 	private FloatingActionButton addMediaFab;
 
-	private View background;
+	private View         background;
 	private LinearLayout bottomSheet;
+
+	private TextView titleAZtextView, titleZAtextView, authorAZtextView, authorZAtextView, typeAZtextView, typeZAtextView, dateAscendingTextView, dateDescendingTextView;
 
 	private RavnApplication application;
 
@@ -84,9 +86,9 @@ public class MainActivity extends AppCompatActivity
 			@Override
 			public void onStateChanged(@NonNull View view, int i)
 			{
-				if (i == BottomSheetBehavior.STATE_COLLAPSED)
+				if ( i == BottomSheetBehavior.STATE_COLLAPSED )
 				{
-					background.setVisibility(View.GONE);
+					background.setVisibility( View.GONE );
 				}
 			}
 
@@ -99,6 +101,24 @@ public class MainActivity extends AppCompatActivity
 			}
 		} );
 
+		titleAZtextView = findViewById( R.id.sortTitleAZ );
+		titleZAtextView = findViewById( R.id.sortTitleZA );
+		authorAZtextView = findViewById( R.id.sortAuthorAZ );
+		authorZAtextView = findViewById( R.id.sortAuthorZA );
+		typeAZtextView = findViewById( R.id.sortTypeAZ );
+		typeZAtextView = findViewById( R.id.sortTypeZA );
+		dateAscendingTextView = findViewById( R.id.sortDateAscending );
+		dateDescendingTextView = findViewById( R.id.sortDateDescending );
+
+		titleAZtextView.setOnClickListener( this );
+		titleZAtextView.setOnClickListener( this );
+		authorAZtextView.setOnClickListener( this );
+		authorZAtextView.setOnClickListener( this );
+		typeAZtextView.setOnClickListener( this );
+		typeZAtextView.setOnClickListener( this );
+		dateAscendingTextView.setOnClickListener( this );
+		dateDescendingTextView.setOnClickListener( this );
+
 		recyclerView = (RecyclerView) findViewById( R.id.mainRecyclerView );
 
 		// Improves performance; size of this view will never change
@@ -108,6 +128,8 @@ public class MainActivity extends AppCompatActivity
 		recyclerView.setLayoutManager( layoutManager );
 		//adapter = new DataAdapter( placeholder );
 		//recyclerView.setAdapter( adapter );
+
+		application.setOperas( application.getOperas(), this );
 	}
 
 
@@ -117,8 +139,80 @@ public class MainActivity extends AppCompatActivity
 		super.onResume();
 
 
-
 		//refreshUI();
+	}
+
+
+	@Override
+	public void onClick(View v)
+	{
+		NetworkManager networkManager = NetworkManager.getSingleton();
+		Request request = new Request();
+		request.setRequestCode( Request.REQUEST_CODE_SORT );
+		boolean send = false;
+
+		switch ( v.getId() )
+		{
+			case R.id.sortTitleAZ:
+				send = true;
+				request.setField( KEY_TITLE );
+				request.setOrder( 1 );
+				break;
+
+			case R.id.sortTitleZA:
+				send = true;
+				request.setField( KEY_TITLE );
+				request.setOrder( 0 );
+				break;
+
+
+			case R.id.sortAuthorAZ:
+				send = true;
+				request.setField( KEY_AUTHOR );
+				request.setOrder( 1 );
+				break;
+
+			case R.id.sortAuthorZA:
+				send = true;
+				request.setField( KEY_AUTHOR );
+				request.setOrder( 0 );
+				break;
+
+
+			case R.id.sortTypeAZ:
+				send = true;
+				request.setField( KEY_TYPE );
+				request.setOrder( 1 );
+				break;
+
+			case R.id.sortTypeZA:
+				send = true;
+				request.setField( KEY_TYPE );
+				request.setOrder( 0 );
+				break;
+
+
+			case R.id.sortDateAscending:
+				send = true;
+				request.setField( KEY_DATE );
+				request.setOrder( 1 );
+				break;
+
+			case R.id.sortDateDescending:
+				send = true;
+				request.setField( KEY_DATE );
+				request.setOrder( 0 );
+				break;
+
+
+			default:
+				break;
+		}
+
+		if ( send )
+		{
+			networkManager.sendRequest( this, request );
+		}
 	}
 
 
@@ -126,7 +220,7 @@ public class MainActivity extends AppCompatActivity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.activity_main_menu, menu);
+		inflater.inflate( R.menu.activity_main_menu, menu );
 		return true;
 	}
 
@@ -156,7 +250,7 @@ public class MainActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v, int position)
 			{
-				Intent intent = new Intent(MainActivity.this, EditActivity.class);
+				Intent intent = new Intent( MainActivity.this, EditActivity.class );
 
 				DataAdapter dataAdapter = (DataAdapter) recyclerView.getAdapter();
 				Media media = dataAdapter.getDataset().get( position );
@@ -177,7 +271,7 @@ public class MainActivity extends AppCompatActivity
 				intent.putExtra( KEY_TYPE, type );
 				intent.putExtra( KEY_DATE, date );
 				intent.putExtra( KEY_ID, id.toString() );
-				startActivity(intent);
+				startActivity( intent );
 			}
 		};
 
