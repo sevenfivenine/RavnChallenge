@@ -214,6 +214,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		if ( send )
 		{
 			networkManager.sendRequest( this, request );
+
+			BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from( bottomSheet );
+			bottomSheetBehavior.setState( BottomSheetBehavior.STATE_HIDDEN );
+		}
+	}
+
+
+	@Override
+	public void onBackPressed()
+	{
+		BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from( bottomSheet );
+
+		if ( bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED )
+		{
+			bottomSheetBehavior.setState( BottomSheetBehavior.STATE_HIDDEN );
+		}
+
+		else
+		{
+			super.onBackPressed();
 		}
 	}
 
