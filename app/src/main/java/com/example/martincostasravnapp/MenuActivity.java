@@ -39,6 +39,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 		{
 			String host = preferences.getString( KEY_HOST, "" );
 
+			ipEditText.setText( host );
+
 			application.connectToHost(this, host);
 
 			Intent intent = new Intent( this, MainActivity.class );
@@ -70,7 +72,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
 				application.connectToHost(this, host);
 
-
+				Intent intent = new Intent( this, MainActivity.class );
+				startActivity( intent );
 			}
 		}
 	}

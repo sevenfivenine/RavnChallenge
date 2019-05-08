@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class Request
 {
+	public static final int REQUEST_CODE_CLOSE  = 6999;
 	public static final int REQUEST_CODE_EMPTY  = 7000;
 	public static final int REQUEST_CODE_LIST   = 7001;
 	public static final int REQUEST_CODE_ADD    = 7002;
@@ -23,10 +24,10 @@ public class Request
 	public static final String NO_FIELD = "NO_FIELD";
 
 
-	private int   requestCode;
-	private Media record;
-	private UUID id;
-	private int order;
+	private int    requestCode;
+	private Media  record;
+	private UUID   id;
+	private int    order;
 	private String field;
 
 
@@ -85,12 +86,21 @@ public class Request
 
 	/**
 	 * Create an empty request to connect to the server
+	 *
 	 * @return
 	 */
-	public static Request Empty()
+	public static Request empty()
 	{
 		Request request = new Request();
 		request.setRequestCode( REQUEST_CODE_EMPTY );
+		return request;
+	}
+
+
+	public static Request close()
+	{
+		Request request = new Request();
+		request.setRequestCode( REQUEST_CODE_CLOSE );
 		return request;
 	}
 

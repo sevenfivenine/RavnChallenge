@@ -67,15 +67,18 @@ public class NetworkManager
 
 		cancelNetworkActivity();
 		networkTask = new NetworkTask( callback );
-		networkTask.execute( Request.Empty() );
+		networkTask.execute( Request.empty() );
 
 		return 0;
 	}
 
 	public void disconnect()
 	{
-		callback = null;
-		cancelNetworkActivity();
+		networkTask = new NetworkTask( callback );
+		networkTask.execute( Request.close() );
+
+		//callback = null;
+		//cancelNetworkActivity();
 	}
 
 	public int sendRequest(Activity activity, Request request)
@@ -188,7 +191,12 @@ public class NetworkManager
 				{
 					for ( Request r : params )
 					{
-						if ( r.getRequestCode() != Request.REQUEST_CODE_EMPTY )
+						if ( r.getRequestCode() == Request.REQUEST_CODE_CLOSE )
+						{
+							disconnectFromServer();
+						}
+
+						else if ( r.getRequestCode() != Request.REQUEST_CODE_EMPTY )
 						{
 							sendRequestInBackground( r );
 						}
@@ -229,6 +237,12 @@ public class NetworkManager
 
 			InputStream inFromServer = client.getInputStream();
 			in = new DataInputStream( inFromServer );
+		}
+
+		private void disconnectFromServer() throws IOException
+		{
+			client.close();
+			Log.d(TAG, client.toString());
 		}
 
 
