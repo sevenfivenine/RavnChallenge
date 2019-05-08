@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class Request
 {
+	public static final int REQUEST_CODE_EMPTY  = 7000;
 	public static final int REQUEST_CODE_LIST   = 7001;
 	public static final int REQUEST_CODE_ADD    = 7002;
 	public static final int REQUEST_CODE_REMOVE = 7003;
@@ -78,6 +79,18 @@ public class Request
 		request.setRequestCode( REQUEST_CODE_SORT );
 		request.setField( field );
 		request.setOrder( order );
+		return request;
+	}
+
+
+	/**
+	 * Create an empty request to connect to the server
+	 * @return
+	 */
+	public static Request Empty()
+	{
+		Request request = new Request();
+		request.setRequestCode( REQUEST_CODE_EMPTY );
 		return request;
 	}
 

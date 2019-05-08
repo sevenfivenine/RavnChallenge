@@ -10,4 +10,8 @@
     <string name="no_record">No new record created</string>
     <string name="empty_fields">Please fill empty fields to continue</string>
     <string name="delete">Delete</string>
+    <string name="connectInstruction">Connect to a server:</string>
+    <string name="connect">Connect</string>
+    <string name="ip">IP Address</string>
+    <string name="no_ip">Please enter a valid IP Address</string>
 </resources>

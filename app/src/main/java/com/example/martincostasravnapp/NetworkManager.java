@@ -1,17 +1,13 @@
 package com.example.martincostasravnapp;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +18,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import static com.example.martincostasravnapp.RavnApplication.KEY_HOST;
+import static com.example.martincostasravnapp.RavnApplication.KEY_PORT;
 
 
 public class NetworkManager
@@ -62,6 +61,17 @@ public class NetworkManager
 	}
 
 
+	public int connect(Activity activity)
+	{
+		this.activity = activity;
+
+		cancelNetworkActivity();
+		networkTask = new NetworkTask( callback );
+		networkTask.execute( Request.Empty() );
+
+		return 0;
+	}
+
 	public void disconnect()
 	{
 		callback = null;
@@ -79,16 +89,6 @@ public class NetworkManager
 		return 0;
 	}
 
-
-	/**
-	 * Start non-blocking execution of NetworkTask.
-	 */
-	public void startDownload()
-	{
-		cancelNetworkActivity();
-		networkTask = new NetworkTask( callback );
-		networkTask.execute();
-	}
 
 
 	/**
@@ -188,7 +188,10 @@ public class NetworkManager
 				{
 					for ( Request r : params )
 					{
-						sendRequestInBackground( r );
+						if ( r.getRequestCode() != Request.REQUEST_CODE_EMPTY )
+						{
+							sendRequestInBackground( r );
+						}
 					}
 				}
 
@@ -205,8 +208,16 @@ public class NetworkManager
 
 		private void connectToServer() throws IOException
 		{
-			String host = MainActivity.host;
-			int port = MainActivity.port;
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences( activity );
+			String host = preferences.getString( KEY_HOST, "" );
+			int port = preferences.getInt( KEY_PORT, -1 );
+
+			assert host != null;
+			if ( host.equals( "" ) || port == -1 )
+			{
+				// Error has occurred, host and port not set yet
+				return;
+			}
 
 			Log.d( TAG, "Connecting to " + host + " on port " + port );
 			client = new Socket( host, port );
@@ -218,16 +229,6 @@ public class NetworkManager
 
 			InputStream inFromServer = client.getInputStream();
 			in = new DataInputStream( inFromServer );
-
-			/**OutputStream outToServer = client.getOutputStream();
-			 DataOutputStream out = new DataOutputStream( outToServer );
-
-			 out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
-			 InputStream inFromServer = client.getInputStream();
-			 DataInputStream in = new DataInputStream( inFromServer );
-
-			 Log.d( TAG, "Server says " + in.readUTF() );
-			 client.close();*/
 		}
 
 
@@ -248,53 +249,6 @@ public class NetworkManager
 			{
 				e.printStackTrace();
 			}
-
-			//out.writeUTF( "" );
-
-			//out.writeUTF( "Hello from " + client.getLocalSocketAddress() );
-
-			//Log.d( TAG, "Server says " + in.readUTF() );
-
-			//String responseString = in.readUTF();
-
-			//int responseCode = Integer.parseInt( responseString );
-
-			/*switch ( responseCode )
-			{
-				case RESPONSE_OK:
-					break;
-				case RESPONSE_ERROR:
-					break;
-				case RESPONSE_PUSH:
-					break;
-				case RESPONSE_LIST:
-					String responseData = in.readUTF();
-
-					try
-					{
-						JSONArray listJSONarray = new JSONArray( responseData );
-
-						loadedMedia = new ArrayList<>();
-
-						for ( int i = 0; i < listJSONarray.length(); i++ )
-						{
-							JSONObject jsonObject = (JSONObject) listJSONarray.get( i );
-							Media media = Media.JSONtoMedia( jsonObject );
-
-							loadedMedia.add( media );
-						}
-					}
-					catch ( JSONException e )
-					{
-						e.printStackTrace();
-					}
-
-					initialListCompleted = true;
-
-					break;
-			}*/
-
-
 		}
 
 

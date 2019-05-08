@@ -3,11 +3,14 @@ package com.example.martincostasravnapp;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Looper;
+import android.preference.PreferenceManager;
+import android.text.Editable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +21,12 @@ import java.util.ArrayList;
 
 public class RavnApplication extends Application implements DownloadCallback
 {
+	public static final  String host = "192.168.7.106";
+	public static final  int    port = 8381;
+
+	public static final String KEY_HOST = "host";
+	public static final String KEY_PORT = "port";
+
 	private NetworkManager networkManager;
 
 	private boolean downloading;
@@ -34,11 +43,25 @@ public class RavnApplication extends Application implements DownloadCallback
 	{
 		super.onCreate();
 
+		// For this application, the port will always be the same
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences( this );
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putInt( KEY_PORT, port );
+		editor.apply();
+	}
+
+	/**
+	 * Attempt to connect to the given IP address
+	 * @param ipString
+	 */
+	public void connectToHost(Activity activity, String ipString)
+	{
 		// Connect to the server to prepare to exchange data
 		if ( !downloading )
 		{
 			downloading = true;
 			networkManager = new NetworkManager( this );
+			networkManager.connect(activity);
 
 			startListeningForPush();
 		}
@@ -237,4 +260,7 @@ public class RavnApplication extends Application implements DownloadCallback
 			}
 		}
 	}
+
+
+
 }

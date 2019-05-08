@@ -25,8 +25,6 @@ import static com.example.martincostasravnapp.Media.KEY_TYPE;
 
 public class MainActivity extends AppCompatActivity
 {
-	public static final  String host = "192.168.7.106";
-	public static final  int    port = 8381;
 	private static final String TAG  = "MainActivity";
 
 	private RecyclerView               recyclerView;
@@ -74,8 +72,6 @@ public class MainActivity extends AppCompatActivity
 		recyclerView.setLayoutManager( layoutManager );
 		//adapter = new DataAdapter( placeholder );
 		//recyclerView.setAdapter( adapter );
-
-
 	}
 
 
@@ -84,9 +80,7 @@ public class MainActivity extends AppCompatActivity
 	{
 		super.onResume();
 
-		// First, request the most current list of data
-		NetworkManager networkManager = NetworkManager.getSingleton();
-		networkManager.sendRequest( this, null);
+
 
 		//refreshUI();
 	}
