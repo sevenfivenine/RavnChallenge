@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity
 
 	private FloatingActionButton addMediaFab;
 
+	private View background;
 	private LinearLayout bottomSheet;
 
 	private RavnApplication application;
@@ -70,9 +73,31 @@ public class MainActivity extends AppCompatActivity
 			}
 		} );
 
+		background = findViewById( R.id.bg );
+
 		bottomSheet = findViewById( R.id.sortBottomSheet );
 		BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from( bottomSheet );
 		bottomSheetBehavior.setState( BottomSheetBehavior.STATE_HIDDEN );
+
+		bottomSheetBehavior.setBottomSheetCallback( new BottomSheetBehavior.BottomSheetCallback()
+		{
+			@Override
+			public void onStateChanged(@NonNull View view, int i)
+			{
+				if (i == BottomSheetBehavior.STATE_COLLAPSED)
+				{
+					background.setVisibility(View.GONE);
+				}
+			}
+
+
+			@Override
+			public void onSlide(@NonNull View view, float v)
+			{
+				background.setVisibility( View.VISIBLE );
+				background.setAlpha( v );
+			}
+		} );
 
 		recyclerView = (RecyclerView) findViewById( R.id.mainRecyclerView );
 
