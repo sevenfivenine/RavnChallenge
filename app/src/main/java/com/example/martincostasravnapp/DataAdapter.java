@@ -10,36 +10,8 @@ import java.util.ArrayList;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder>
 {
-	private ArrayList<Media> dataset;
+	private ArrayList<Media>          dataset;
 	private RecyclerViewClickListener listener;
-
-	public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-	{
-		public TextView textViewName, textViewComposer, textViewSubgenre, textViewDate;
-		private RecyclerViewClickListener listener;
-
-
-		public DataViewHolder(View v, RecyclerViewClickListener listener)
-		{
-			super( v );
-
-			textViewName = v.findViewById( R.id.textViewName );
-			textViewComposer = v.findViewById( R.id.textViewComposer );
-			textViewSubgenre = v.findViewById( R.id.textViewSubGenre );
-			textViewDate = v.findViewById( R.id.textViewDate );
-
-			this.listener = listener;
-			v.setOnClickListener( this );
-		}
-
-
-		@Override
-		public void onClick(View v)
-		{
-			listener.onClick( v, getAdapterPosition() );
-		}
-	}
-
 
 	public DataAdapter(ArrayList<Media> myDataset, RecyclerViewClickListener listener)
 	{
@@ -75,14 +47,41 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.DataViewHolder
 	}
 
 
+	public ArrayList<Media> getDataset()
+	{
+		return dataset;
+	}
+
+
 	public interface RecyclerViewClickListener
 	{
 		void onClick(View view, int position);
 	}
 
-
-	public ArrayList<Media> getDataset()
+	public static class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 	{
-		return dataset;
+		public TextView textViewName, textViewComposer, textViewSubgenre, textViewDate;
+		private RecyclerViewClickListener listener;
+
+
+		public DataViewHolder(View v, RecyclerViewClickListener listener)
+		{
+			super( v );
+
+			textViewName = v.findViewById( R.id.textViewName );
+			textViewComposer = v.findViewById( R.id.textViewComposer );
+			textViewSubgenre = v.findViewById( R.id.textViewSubGenre );
+			textViewDate = v.findViewById( R.id.textViewDate );
+
+			this.listener = listener;
+			v.setOnClickListener( this );
+		}
+
+
+		@Override
+		public void onClick(View v)
+		{
+			listener.onClick( v, getAdapterPosition() );
+		}
 	}
 }

@@ -28,20 +28,13 @@ public class RavnApplication extends Application implements DownloadCallback
 	public static final String KEY_PORT = "port";
 
 	public static final String TAG = "RavnApplication";
-
-	private NetworkManager networkManager;
-
-	private boolean connected;
-
-	private boolean downloading;
-
-	private ArrayList<Media> operas = new ArrayList<>();
-
-	private boolean pushThreadInterrupted;
-
-	private Activity activity;
-
 	public MenuItem connectionStatusMenuItem;
+	private NetworkManager networkManager;
+	private boolean connected;
+	private boolean downloading;
+	private ArrayList<Media> operas = new ArrayList<>();
+	private boolean pushThreadInterrupted;
+	private Activity activity;
 
 
 	@Override
@@ -129,14 +122,23 @@ public class RavnApplication extends Application implements DownloadCallback
 
 								if ( responseCode == NetworkManager.RESPONSE_PUSH )
 								{
-									// On the first push, we are officially connected
-									// But also wait for UI to catch up
-									if ( !connected && connectionStatusMenuItem != null )
-									{
-										setConnected( true );
-									}
-
 									updateFromPush();
+
+									// On the first push, we are officially connected
+									// But also wait for UI to catch up to change the icon
+									if ( !connected )
+									{
+										boolean waitForUI = true;
+
+										while ( waitForUI )
+										{
+											if ( connectionStatusMenuItem != null )
+											{
+												setConnected( true );
+												waitForUI = false;
+											}
+										}
+									}
 								}
 							}
 
@@ -144,8 +146,6 @@ public class RavnApplication extends Application implements DownloadCallback
 							{
 								e.printStackTrace();
 							}
-
-
 						}
 					}
 					catch ( IOException e )
@@ -197,7 +197,6 @@ public class RavnApplication extends Application implements DownloadCallback
 	{
 		switch ( progressCode )
 		{
-			// You can add UI behavior for progress updates here.
 			case Progress.ERROR:
 				break;
 			case Progress.CONNECT_SUCCESS:
@@ -237,9 +236,6 @@ public class RavnApplication extends Application implements DownloadCallback
 
 	/**
 	 * Set the list of operas and update the UI to reflect changes
-	 *
-	 * @param operas
-	 * @param activity
 	 */
 	public void setOperas(ArrayList<Media> operas, Activity activity)
 	{
@@ -284,23 +280,49 @@ public class RavnApplication extends Application implements DownloadCallback
 
 		if ( connectionStatusMenuItem != null )
 		{
-			activity.runOnUiThread( new Runnable()
+			Log.d( TAG, "Trying to run!!!!!" );
+
+			// If we are not on the UI thread, send task to UI thread
+			if ( Looper.myLooper() != Looper.getMainLooper() )
 			{
-				@Override
-				public void run()
+				activity.runOnUiThread( new Runnable()
 				{
-					if ( uiConnected )
+					@Override
+					public void run()
 					{
-						connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_connected );
-					}
+						Log.d( TAG, "RUNNING!!!!!" + uiConnected + activity.getLocalClassName() );
 
-					else
-					{
-						connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_disconnected );
+						if ( uiConnected )
+						{
+							connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_connected );
+						}
+
+						else
+						{
+							connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_disconnected );
+						}
 					}
+				} );
+			}
+
+			else
+			{
+				Log.d( TAG, "RUNNING!!!!!" + uiConnected + activity.getLocalClassName() );
+
+				if ( uiConnected )
+				{
+					connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_connected );
 				}
-			} );
 
+				else
+				{
+					connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_disconnected );
+				}
+			}
 		}
 	}
+
+
+
+
 }

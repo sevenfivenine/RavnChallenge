@@ -1,9 +1,8 @@
 package com.example.martincostasravnapp;
 
-import android.app.Application;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,11 +26,6 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 	private Button saveButton, deleteButton;
 
 	private UUID id;
-
-	private enum Mode {
-		ADD_MODE, EDIT_MODE
-	};
-
 	private Mode mode;
 
 	private RavnApplication application;
@@ -58,13 +52,14 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 
 		Intent intent = getIntent();
 
-		if ( intent.hasExtra( KEY_TITLE ) && intent.hasExtra( KEY_AUTHOR ) && intent.hasExtra( KEY_TYPE ) && intent.hasExtra( KEY_DATE ) && intent.hasExtra( KEY_ID ) )
+		if ( intent.hasExtra( KEY_TITLE ) && intent.hasExtra( KEY_AUTHOR ) && intent.hasExtra( KEY_TYPE ) && intent.hasExtra( KEY_DATE ) && intent.hasExtra(
+				KEY_ID ) )
 		{
 			String title = intent.getStringExtra( KEY_TITLE );
 			String author = intent.getStringExtra( KEY_AUTHOR );
 			String type = intent.getStringExtra( KEY_TYPE );
 			String date = intent.getStringExtra( KEY_DATE );
-			UUID id = UUID.fromString(intent.getStringExtra( KEY_ID ));
+			UUID id = UUID.fromString( intent.getStringExtra( KEY_ID ) );
 
 			titleEditText.setText( title );
 			authorEditText.setText( author );
@@ -80,14 +75,16 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 		application.setActivity( this );
 	}
 
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate( R.menu.activity_main_menu, menu );
-		MenuItem connectionStatusMenuItem = menu.findItem( R.id.sortMenuItem );
-		connectionStatusMenuItem.setVisible( false );
+		menu.findItem( R.id.sortMenuItem ).setVisible( false );
+		MenuItem connectionStatusMenuItem = menu.findItem( R.id.connectionStatusMenuItem );
 		application.connectionStatusMenuItem = connectionStatusMenuItem;
+		application.setConnected( application.isConnected() );
 		return true;
 	}
 
@@ -154,5 +151,11 @@ public class EditActivity extends AppCompatActivity implements View.OnClickListe
 			Intent intent = new Intent( this, MainActivity.class );
 			startActivity( intent );
 		}
+	}
+
+
+	private enum Mode
+	{
+		ADD_MODE, EDIT_MODE
 	}
 }

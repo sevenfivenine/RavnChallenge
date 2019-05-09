@@ -15,7 +15,7 @@ public class Media
 	public static final String KEY_VIEW_COUNT = "viewCount";
 	public static final String KEY_VIEW_ORDER = "viewOrder";
 
-	public static final int ORDER_ASCENDING = 1;
+	public static final int ORDER_ASCENDING  = 1;
 	public static final int ORDER_DESCENDING = 0;
 
 	private String type, title, author, date;
@@ -41,22 +41,6 @@ public class Media
 	}
 
 
-	public JSONObject toJSONObject() throws JSONException
-	{
-		JSONObject jsonObject = new JSONObject();
-
-		jsonObject.put( KEY_ID, id );
-		jsonObject.put( KEY_TYPE, type );
-		jsonObject.put( KEY_TITLE, title );
-		jsonObject.put( KEY_AUTHOR, author );
-		jsonObject.put( KEY_DATE, date );
-		jsonObject.put( KEY_VIEW_COUNT, viewCount );
-		jsonObject.put( KEY_VIEW_ORDER, viewOrder );
-
-		return jsonObject;
-	}
-
-
 	public static Media JSONtoMedia(JSONObject jsonObject) throws JSONException, ClassCastException
 	{
 		Media media = new Media();
@@ -70,6 +54,22 @@ public class Media
 		media.setViewOrder( (Integer) jsonObject.get( KEY_VIEW_ORDER ) );
 
 		return media;
+	}
+
+
+	public JSONObject toJSONObject() throws JSONException
+	{
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put( KEY_ID, id );
+		jsonObject.put( KEY_TYPE, type );
+		jsonObject.put( KEY_TITLE, title );
+		jsonObject.put( KEY_AUTHOR, author );
+		jsonObject.put( KEY_DATE, date );
+		jsonObject.put( KEY_VIEW_COUNT, viewCount );
+		jsonObject.put( KEY_VIEW_ORDER, viewOrder );
+
+		return jsonObject;
 	}
 
 

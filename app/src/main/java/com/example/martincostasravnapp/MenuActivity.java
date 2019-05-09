@@ -2,9 +2,9 @@ package com.example.martincostasravnapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import static com.example.martincostasravnapp.MainActivity.KEY_EDIT_IP;
 import static com.example.martincostasravnapp.RavnApplication.KEY_HOST;
 
 public class MenuActivity extends AppCompatActivity implements View.OnClickListener
@@ -38,6 +39,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 		application = (RavnApplication) getApplication();
 		application.setActivity( this );
 
+		boolean editIP = getIntent().getBooleanExtra( KEY_EDIT_IP, false );
+
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences( this );
 		if ( preferences.contains( KEY_HOST ) )
 		{
@@ -45,12 +48,16 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
 			ipEditText.setText( host );
 
-			application.connectToHost( this );
+			if ( !editIP )
+			{
+				application.connectToHost( this );
 
-			Intent intent = new Intent( this, MainActivity.class );
-			startActivity( intent );
+				Intent intent = new Intent( this, MainActivity.class );
+				startActivity( intent );
+
+				finish();
+			}
 		}
-
 	}
 
 
@@ -59,9 +66,10 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate( R.menu.activity_main_menu, menu );
-		MenuItem connectionStatusMenuItem = menu.findItem( R.id.sortMenuItem );
-		connectionStatusMenuItem.setVisible( false );
+		menu.findItem( R.id.sortMenuItem ).setVisible( false );
+		MenuItem connectionStatusMenuItem = menu.findItem( R.id.connectionStatusMenuItem );
 		application.connectionStatusMenuItem = connectionStatusMenuItem;
+		application.setConnected( application.isConnected() );
 		return true;
 	}
 
@@ -90,6 +98,8 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
 				Intent intent = new Intent( this, MainActivity.class );
 				startActivity( intent );
+
+				finish();
 			}
 		}
 	}

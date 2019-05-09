@@ -1,11 +1,11 @@
 package com.example.martincostasravnapp;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +28,9 @@ import static com.example.martincostasravnapp.Media.ORDER_DESCENDING;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
-	private static final String TAG = "MainActivity";
+	private static final String TAG      = "MainActivity";
+
+	public static final String KEY_EDIT_IP = "editIP";
 
 	private RecyclerView               recyclerView;
 	private RecyclerView.Adapter       adapter;
@@ -43,8 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	private RavnApplication application;
 
-	private Opera[] placeholder;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -54,10 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		application = (RavnApplication) getApplication();
 		application.setActivity( this );
-
-		// Placeholder data before server connection
-		Opera placeholderItem = new Opera( "Lorem Ipsum", "Dolor sit amet", "consectetur " );
-		placeholder = new Opera[]{placeholderItem, placeholderItem, placeholderItem, placeholderItem};
 
 		addMediaFab = findViewById( R.id.addMediaFab );
 		addMediaFab.setOnClickListener( new View.OnClickListener()
@@ -120,13 +116,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// Improves performance; size of this view will never change
 		recyclerView.setHasFixedSize( true );
 
-
-
 		layoutManager = new LinearLayoutManager( this );
 		recyclerView.setLayoutManager( layoutManager );
 
-		DividerItemDecoration dividerItemDecoration = new DividerItemDecoration( recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-		recyclerView.addItemDecoration(dividerItemDecoration);
+		DividerItemDecoration dividerItemDecoration = new DividerItemDecoration( recyclerView.getContext(), DividerItemDecoration.VERTICAL );
+		recyclerView.addItemDecoration( dividerItemDecoration );
 
 		application.setOperas( application.getOperas(), this );
 	}
@@ -136,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	protected void onResume()
 	{
 		super.onResume();
-
 
 		//refreshUI();
 	}
@@ -234,7 +227,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			NetworkManager networkManager = NetworkManager.getSingleton();
 			networkManager.disconnect();
 
-			super.onBackPressed();
+			Intent intent = new Intent( this, MenuActivity.class );
+			intent.putExtra( KEY_EDIT_IP, true );
+			startActivity( intent );
 		}
 	}
 
@@ -246,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		inflater.inflate( R.menu.activity_main_menu, menu );
 		MenuItem connectionStatusMenuItem = menu.findItem( R.id.connectionStatusMenuItem );
 		application.connectionStatusMenuItem = connectionStatusMenuItem;
+		application.setConnected( application.isConnected() );
 		return true;
 	}
 
@@ -305,10 +301,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			adapter = new DataAdapter( application.getOperas(), listener );
 			recyclerView.setAdapter( adapter );
 		}
-
-
-		NetworkManager networkManager = NetworkManager.getSingleton();
-		//networkManager.initialListCompleted = true;
 	}
 
 }

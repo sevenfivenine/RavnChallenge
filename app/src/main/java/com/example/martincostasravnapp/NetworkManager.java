@@ -33,19 +33,14 @@ public class NetworkManager
 	public static final int RESPONSE_LIST  = 3;
 
 	private static RavnApplication ravnApplication;
-
+	public ArrayList<Media> loadedMedia;
+	public boolean initialListCompleted;    // When the app starts, we request LIST, so it is important not to read from in until this is finished
+	DataInputStream  in;
+	DataOutputStream out;
 	private Activity                 activity;
 	private DownloadCallback<String> callback;
 	private NetworkTask              networkTask;
-
-	public ArrayList<Media> loadedMedia;
-
-	public boolean initialListCompleted;    // When the app starts, we request LIST, so it is important not to read from in until this is finished
-
 	private Socket client;
-
-	DataInputStream  in;
-	DataOutputStream out;
 
 
 	public NetworkManager(RavnApplication ravnApplication)
@@ -75,6 +70,7 @@ public class NetworkManager
 	{
 		networkTask = new NetworkTask( callback );
 		networkTask.execute( Request.close() );
+		ravnApplication.setConnected( false );
 	}
 
 
@@ -124,30 +120,6 @@ public class NetworkManager
 
 
 		/**
-		 * Wrapper class that serves as a union of a result value and an exception. When the download
-		 * task has completed, either the result value or exception can be a non-null value.
-		 * This allows you to pass exceptions to the UI thread that were thrown during doInBackground().
-		 */
-		class Result
-		{
-			public String    resultValue;
-			public Exception exception;
-
-
-			public Result(String resultValue)
-			{
-				this.resultValue = resultValue;
-			}
-
-
-			public Result(Exception exception)
-			{
-				this.exception = exception;
-			}
-		}
-
-
-		/**
 		 * Cancel background network operation if we do not have network connectivity.
 		 */
 		@Override
@@ -192,7 +164,7 @@ public class NetworkManager
 					{
 						if ( r.getRequestCode() == Request.REQUEST_CODE_CLOSE )
 						{
-							disconnectFromServer();
+							disconnectFromServer( r );
 						}
 
 						else if ( r.getRequestCode() != Request.REQUEST_CODE_EMPTY )
@@ -232,8 +204,18 @@ public class NetworkManager
 		}
 
 
-		private void disconnectFromServer() throws IOException
+		private void disconnectFromServer(Request request) throws IOException
 		{
+			try
+			{
+				JSONObject jsonRequest = request.toJSONObject();
+				out.writeUTF( jsonRequest.toString() );
+			}
+			catch ( JSONException e )
+			{
+				e.printStackTrace();
+			}
+
 			client.shutdownOutput();
 			client = null;
 		}
@@ -275,7 +257,10 @@ public class NetworkManager
 				{
 					callback.updateFromDownload( result.resultValue );
 				}
+			}
 
+			if ( callback != null )
+			{
 				callback.finishDownloading();
 			}
 
@@ -289,6 +274,29 @@ public class NetworkManager
 		@Override
 		protected void onCancelled(Result result)
 		{
+		}
+
+		/**
+		 * Wrapper class that serves as a union of a result value and an exception. When the download
+		 * task has completed, either the result value or exception can be a non-null value.
+		 * This allows you to pass exceptions to the UI thread that were thrown during doInBackground().
+		 */
+		class Result
+		{
+			public String    resultValue;
+			public Exception exception;
+
+
+			public Result(String resultValue)
+			{
+				this.resultValue = resultValue;
+			}
+
+
+			public Result(Exception exception)
+			{
+				this.exception = exception;
+			}
 		}
 	}
 
