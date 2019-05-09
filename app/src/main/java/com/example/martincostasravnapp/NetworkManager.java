@@ -71,6 +71,7 @@ public class NetworkManager
 		networkTask = new NetworkTask( callback );
 		networkTask.execute( Request.close() );
 		ravnApplication.setConnected( false );
+		ravnApplication.pushThread.interrupt();
 	}
 
 

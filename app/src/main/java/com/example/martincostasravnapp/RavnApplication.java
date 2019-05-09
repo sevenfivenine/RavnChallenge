@@ -27,14 +27,14 @@ public class RavnApplication extends Application implements DownloadCallback
 	public static final String KEY_HOST = "host";
 	public static final String KEY_PORT = "port";
 
-	public static final String TAG = "RavnApplication";
-	public MenuItem connectionStatusMenuItem;
-	private NetworkManager networkManager;
-	private boolean connected;
-	private boolean downloading;
-	private ArrayList<Media> operas = new ArrayList<>();
-	private boolean pushThreadInterrupted;
-	private Activity activity;
+	public static final String           TAG    = "RavnApplication";
+	public              MenuItem         connectionStatusMenuItem;
+	private             NetworkManager   networkManager;
+	private             boolean          connected;
+	private             ArrayList<Media> operas = new ArrayList<>();
+	public              Thread           pushThread;
+	public              boolean          pushThreadInterrupted;
+	private             Activity         activity;
 
 
 	@Override
@@ -56,14 +56,10 @@ public class RavnApplication extends Application implements DownloadCallback
 	public void connectToHost(Activity activity)
 	{
 		// Connect to the server to prepare to exchange data
-		if ( !downloading )
-		{
-			downloading = true;
-			networkManager = new NetworkManager( this );
-			networkManager.connect( activity );
+		networkManager = new NetworkManager( this );
+		networkManager.connect( activity );
 
-			startListeningForPush();
-		}
+		startListeningForPush();
 	}
 
 
@@ -98,7 +94,7 @@ public class RavnApplication extends Application implements DownloadCallback
 
 	public void startListeningForPush()
 	{
-		new Thread( new Runnable()
+		pushThread = new Thread( new Runnable()
 		{
 			public void run()
 			{
@@ -154,7 +150,9 @@ public class RavnApplication extends Application implements DownloadCallback
 					}
 				}
 			}
-		} ).start();
+		} );
+
+		pushThread.start();
 	}
 
 
@@ -214,7 +212,6 @@ public class RavnApplication extends Application implements DownloadCallback
 	@Override
 	public void finishDownloading()
 	{
-		downloading = false;
 		if ( networkManager != null )
 		{
 			networkManager.cancelNetworkActivity();
@@ -321,8 +318,6 @@ public class RavnApplication extends Application implements DownloadCallback
 			}
 		}
 	}
-
-
 
 
 }
