@@ -16,6 +16,7 @@
     <string name="no_ip">Please enter a valid IP Address</string>
     <string name="sort">Sort</string>
     <string name="sort_by">SORT BY</string>
+
     <string name="sort_title_AZ">Name of opera (A to Z)</string>
     <string name="sort_title_ZA">Name of opera (Z to A)</string>
     <string name="sort_author_AZ">Composer (A to Z)</string>

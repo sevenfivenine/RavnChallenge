@@ -10,6 +10,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -126,10 +127,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// Improves performance; size of this view will never change
 		recyclerView.setHasFixedSize( true );
 
+
+
 		layoutManager = new LinearLayoutManager( this );
 		recyclerView.setLayoutManager( layoutManager );
-		//adapter = new DataAdapter( placeholder );
-		//recyclerView.setAdapter( adapter );
+
+		DividerItemDecoration dividerItemDecoration = new DividerItemDecoration( recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+		recyclerView.addItemDecoration(dividerItemDecoration);
 
 		application.setOperas( application.getOperas(), this );
 	}
