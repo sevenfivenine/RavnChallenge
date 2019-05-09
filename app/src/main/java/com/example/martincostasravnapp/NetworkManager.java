@@ -234,8 +234,8 @@ public class NetworkManager
 
 		private void disconnectFromServer() throws IOException
 		{
-			client.close();
-			Log.d( TAG, client.toString() );
+			client.shutdownOutput();
+			client = null;
 		}
 
 

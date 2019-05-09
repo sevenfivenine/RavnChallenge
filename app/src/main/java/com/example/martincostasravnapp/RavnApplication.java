@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.MenuItem;
 
 import org.json.JSONArray;
@@ -25,6 +26,8 @@ public class RavnApplication extends Application implements DownloadCallback
 
 	public static final String KEY_HOST = "host";
 	public static final String KEY_PORT = "port";
+
+	public static final String TAG = "RavnApplication";
 
 	private NetworkManager networkManager;
 
@@ -127,7 +130,8 @@ public class RavnApplication extends Application implements DownloadCallback
 								if ( responseCode == NetworkManager.RESPONSE_PUSH )
 								{
 									// On the first push, we are officially connected
-									if ( !connected )
+									// But also wait for UI to catch up
+									if ( !connected && connectionStatusMenuItem != null )
 									{
 										setConnected( true );
 									}
