@@ -5,12 +5,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.text.Editable;
+import android.view.MenuItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +36,9 @@ public class RavnApplication extends Application implements DownloadCallback
 
 	private boolean pushThreadInterrupted;
 
-	private MainActivity mainActivity;
+	private Activity activity;
+
+	public MenuItem connectionStatusMenuItem;
 
 
 	@Override
@@ -84,9 +85,9 @@ public class RavnApplication extends Application implements DownloadCallback
 	}
 
 
-	public void setMainActivity(MainActivity mainActivity)
+	public void setActivity(Activity activity)
 	{
-		this.mainActivity = mainActivity;
+		this.activity = activity;
 	}
 
 
@@ -125,6 +126,12 @@ public class RavnApplication extends Application implements DownloadCallback
 
 								if ( responseCode == NetworkManager.RESPONSE_PUSH )
 								{
+									// On the first push, we are officially connected
+									if ( !connected )
+									{
+										setConnected( true );
+									}
+
 									updateFromPush();
 								}
 							}
@@ -165,7 +172,7 @@ public class RavnApplication extends Application implements DownloadCallback
 				networkManager.loadedMedia.add( media );
 			}
 
-			setOperas( networkManager.loadedMedia, mainActivity );
+			setOperas( networkManager.loadedMedia, activity );
 		}
 		catch ( JSONException e )
 		{
@@ -262,5 +269,34 @@ public class RavnApplication extends Application implements DownloadCallback
 	public boolean isConnected()
 	{
 		return connected;
+	}
+
+
+	public void setConnected(boolean connected)
+	{
+		this.connected = connected;
+
+		final boolean uiConnected = connected;
+
+		if ( connectionStatusMenuItem != null )
+		{
+			activity.runOnUiThread( new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					if ( uiConnected )
+					{
+						connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_connected );
+					}
+
+					else
+					{
+						connectionStatusMenuItem.setIcon( R.drawable.ic_connection_status_disconnected );
+					}
+				}
+			} );
+
+		}
 	}
 }

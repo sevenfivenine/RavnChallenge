@@ -36,6 +36,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 		connectButton.setOnClickListener( this );
 
 		application = (RavnApplication) getApplication();
+		application.setActivity( this );
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences( this );
 		if ( preferences.contains( KEY_HOST ) )
@@ -58,7 +59,9 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate( R.menu.activity_main_menu, menu );
-		menu.findItem( R.id.sortMenuItem ).setVisible( false );
+		MenuItem connectionStatusMenuItem = menu.findItem( R.id.sortMenuItem );
+		connectionStatusMenuItem.setVisible( false );
+		application.connectionStatusMenuItem = connectionStatusMenuItem;
 		return true;
 	}
 

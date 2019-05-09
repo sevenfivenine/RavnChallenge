@@ -1,11 +1,7 @@
 package com.example.martincostasravnapp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -13,16 +9,13 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.example.martincostasravnapp.Media.KEY_AUTHOR;
@@ -60,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		setContentView( R.layout.activity_main );
 
 		application = (RavnApplication) getApplication();
-		application.setMainActivity( this );
+		application.setActivity( this );
 
 		// Placeholder data before server connection
 		Opera placeholderItem = new Opera( "Lorem Ipsum", "Dolor sit amet", "consectetur " );
@@ -251,6 +244,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate( R.menu.activity_main_menu, menu );
+		MenuItem connectionStatusMenuItem = menu.findItem( R.id.connectionStatusMenuItem );
+		application.connectionStatusMenuItem = connectionStatusMenuItem;
 		return true;
 	}
 

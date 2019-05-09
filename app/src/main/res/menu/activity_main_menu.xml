@@ -4,7 +4,7 @@
     <item
         android:id="@+id/connectionStatusMenuItem"
         android:title="@string/connection_status"
-        android:icon="@drawable/ic_connection_status_connected"
+        android:icon="@drawable/ic_connection_status_disconnected"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/sortMenuItem"
