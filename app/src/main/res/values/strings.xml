@@ -25,5 +25,6 @@
     <string name="sort_type_ZA">Subgenre (Z to A)</string>
     <string name="sort_date_ascending">Chronological</string>
     <string name="sort_date_descending">Reverse chronological</string>
+    <string name="connection_status">Connection Status</string>
 
 </resources>
