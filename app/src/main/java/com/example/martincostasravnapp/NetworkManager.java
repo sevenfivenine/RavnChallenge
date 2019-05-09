@@ -40,7 +40,7 @@ public class NetworkManager
 
 	public ArrayList<Media> loadedMedia;
 
-	public boolean initialListCompleted;	// When the app starts, we request LIST, so it is important not to read from in until this is finished
+	public boolean initialListCompleted;    // When the app starts, we request LIST, so it is important not to read from in until this is finished
 
 	private Socket client;
 
@@ -61,25 +61,22 @@ public class NetworkManager
 	}
 
 
-	public int connect(Activity activity)
+	public void connect(Activity activity)
 	{
 		this.activity = activity;
 
 		cancelNetworkActivity();
 		networkTask = new NetworkTask( callback );
 		networkTask.execute( Request.empty() );
-
-		return 0;
 	}
+
 
 	public void disconnect()
 	{
 		networkTask = new NetworkTask( callback );
 		networkTask.execute( Request.close() );
-
-		//callback = null;
-		//cancelNetworkActivity();
 	}
+
 
 	public int sendRequest(Activity activity, Request request)
 	{
@@ -91,7 +88,6 @@ public class NetworkManager
 
 		return 0;
 	}
-
 
 
 	/**
@@ -109,20 +105,23 @@ public class NetworkManager
 	/**
 	 * Communicates with the server in background
 	 */
-	private class NetworkTask extends AsyncTask<Request, Integer, NetworkTask.Result>
+	public class NetworkTask extends AsyncTask<Request, Integer, NetworkTask.Result>
 	{
 
 		private DownloadCallback<String> callback;
+
 
 		NetworkTask(DownloadCallback<String> callback)
 		{
 			setCallback( callback );
 		}
 
+
 		void setCallback(DownloadCallback<String> callback)
 		{
 			this.callback = callback;
 		}
+
 
 		/**
 		 * Wrapper class that serves as a union of a result value and an exception. When the download
@@ -220,13 +219,6 @@ public class NetworkManager
 			String host = preferences.getString( KEY_HOST, "" );
 			int port = preferences.getInt( KEY_PORT, -1 );
 
-			assert host != null;
-			if ( host.equals( "" ) || port == -1 )
-			{
-				// Error has occurred, host and port not set yet
-				return;
-			}
-
 			Log.d( TAG, "Connecting to " + host + " on port " + port );
 			client = new Socket( host, port );
 
@@ -239,10 +231,11 @@ public class NetworkManager
 			in = new DataInputStream( inFromServer );
 		}
 
+
 		private void disconnectFromServer() throws IOException
 		{
 			client.close();
-			Log.d(TAG, client.toString());
+			Log.d( TAG, client.toString() );
 		}
 
 
@@ -285,8 +278,6 @@ public class NetworkManager
 
 				callback.finishDownloading();
 			}
-
-			//TODO check result
 
 			ravnApplication.setOperas( loadedMedia, activity );
 		}

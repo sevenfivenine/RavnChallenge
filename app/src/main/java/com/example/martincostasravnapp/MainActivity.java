@@ -237,8 +237,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 		else
 		{
-			application.finishDownloading();
-
 			// If we are going back to MenuActivity, disconnect
 			NetworkManager networkManager = NetworkManager.getSingleton();
 			networkManager.disconnect();

@@ -21,13 +21,15 @@ import java.util.ArrayList;
 
 public class RavnApplication extends Application implements DownloadCallback
 {
-	public static final  String host = "192.168.7.106";
-	public static final  int    port = 8381;
+	public static final String host = "192.168.7.106";
+	public static final int    port = 8381;
 
 	public static final String KEY_HOST = "host";
 	public static final String KEY_PORT = "port";
 
 	private NetworkManager networkManager;
+
+	private boolean connected;
 
 	private boolean downloading;
 
@@ -50,18 +52,18 @@ public class RavnApplication extends Application implements DownloadCallback
 		editor.apply();
 	}
 
+
 	/**
 	 * Attempt to connect to the given IP address
-	 * @param ipString
 	 */
-	public void connectToHost(Activity activity, String ipString)
+	public void connectToHost(Activity activity)
 	{
 		// Connect to the server to prepare to exchange data
 		if ( !downloading )
 		{
 			downloading = true;
 			networkManager = new NetworkManager( this );
-			networkManager.connect(activity);
+			networkManager.connect( activity );
 
 			startListeningForPush();
 		}
@@ -110,11 +112,6 @@ public class RavnApplication extends Application implements DownloadCallback
 					{
 						continue;
 					}
-
-					/*if ( !networkManager.initialListCompleted )
-					{
-						continue;
-					}*/
 
 					try
 					{
@@ -262,5 +259,8 @@ public class RavnApplication extends Application implements DownloadCallback
 	}
 
 
-
+	public boolean isConnected()
+	{
+		return connected;
+	}
 }

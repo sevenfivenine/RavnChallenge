@@ -44,13 +44,14 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
 			ipEditText.setText( host );
 
-			application.connectToHost(this, host);
+			application.connectToHost( this );
 
 			Intent intent = new Intent( this, MainActivity.class );
 			startActivity( intent );
 		}
 
 	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -82,7 +83,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 				editor.putString( KEY_HOST, host );
 				editor.apply();
 
-				application.connectToHost(this, host);
+				application.connectToHost( this );
 
 				Intent intent = new Intent( this, MainActivity.class );
 				startActivity( intent );
